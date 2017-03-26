@@ -6,7 +6,7 @@ from subprocess import call
 #constants
 DEVICE_NAME = 'default'
 TRIGGER_WORD = 'computer' #sphinx sucks, but is relatively accurate at not mixing up "computer" with another word
-EXIT_WORD = 'terminate' #wit.ai seems to confuse "quit" with "what" and "exit" with "extact" a lot
+EXIT_WORD = 'terminate' #since wit.ai seems to confuse "quit" with "what" and "exit" with "extact" a lot
 CALIBRATE_DURATION = 5 #default 1
 PAUSE_THRESHOLD = 0.5 #default 0.8, but I'm impatient
 
@@ -72,7 +72,7 @@ while True:
                 print('Wit heard: ' + text)
                 if 'netflix' in text:
                     call(['google-chrome', 'https://netflix.com'])
-                elif EXIT_WORD in text: #"quit" seems to miss too much as "what"
+                elif EXIT_WORD in text:
                     print('User requested quit')
                     quit()
     except sr.UnknownValueError:
