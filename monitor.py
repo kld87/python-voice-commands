@@ -1,27 +1,30 @@
 #!/usr/bin/env python3
 
-#sources:
-
 import speech_recognition as sr
 from subprocess import call
 
-
 #constants
+DEVICE_NAME = 'default'
+TRIGGER_WORD = 'computer' #sphinx sucks, but is relatively accurate at not mixing up "computer" with another word
+EXIT_WORD = 'terminate' #wit.ai seems to confuse "quit" with "what" and "exit" with "extact" a lot
+CALIBRATE_DURATION = 5 #default 1
+PAUSE_THRESHOLD = 0.5 #default 0.8, but I'm impatient
+
+#get our key for wit.ai
 with open('wit_key.txt') as fp:
     for line in fp:
         WIT_AI_KEY = line.strip()
-TRIGGER_WORD = 'computer' #sphinx sucks, but is relatively accurate at not mixing up "computer" with another word
-
+        break
 
 #init speech recognition
 listener = sr.Recognizer()
-listener.pause_threshold = 0.5 #default 0.8, but I'm impatient
+listener.pause_threshold = PAUSE_THRESHOLD
 
 #select mic & some debugging info
 mic = False
 for i, name in enumerate(sr.Microphone.list_microphone_names()):
     print(str(i) + ': ' + name)
-    if 'default' in name: #force mic choice here
+    if DEVICE_NAME in name: #force mic choice here
         print('Using: ' + name)
         mic = sr.Microphone(device_index=i)
 if not mic:
@@ -31,7 +34,7 @@ if not mic:
 #calibrate mic
 with mic as source:
     print('Setting baseline, please be quiet...')
-    listener.adjust_for_ambient_noise(source, duration=5)
+    listener.adjust_for_ambient_noise(source, duration=CALIBRATE_DURATION)
     print('done.')
 
 #helper to listen to mic and return audio for recognition
@@ -69,7 +72,7 @@ while True:
                 print('Wit heard: ' + text)
                 if 'netflix' in text:
                     call(['google-chrome', 'https://netflix.com'])
-                elif 'terminate' in text: #"quit" seems to miss too much as "what"
+                elif EXIT_WORD in text: #"quit" seems to miss too much as "what"
                     print('User requested quit')
                     quit()
     except sr.UnknownValueError:
